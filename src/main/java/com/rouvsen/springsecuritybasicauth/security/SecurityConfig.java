@@ -8,8 +8,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -46,8 +46,9 @@ public class SecurityConfig {
                                 )
                          .anyRequest().authenticated()
                 )
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         return security.build();
     }
 
