@@ -1,5 +1,6 @@
 package com.rouvsen.springsecuritybasicauth.security;
 
+import com.rouvsen.springsecuritybasicauth.model.Role;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,11 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+//    @Bean
+//    public H2ConsoleProperties h2ConsoleProperties() {
+//        return new H2ConsoleProperties();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity security,
@@ -32,8 +38,13 @@ public class SecurityConfig {
                                 .ignoringRequestMatchers(PathRequest.toH2Console())
                 )
                 .authorizeHttpRequests(x ->
-                        x.requestMatchers("/public/**").permitAll()
-                         .requestMatchers("/private/**").authenticated()
+                        x.requestMatchers(PathRequest.toH2Console()).hasRole(Role.ROLE_ADMIN.getValue())
+                         .requestMatchers(mvcRequestMatcherBuilder.pattern("/public/**")).permitAll()
+                         .requestMatchers(mvcRequestMatcherBuilder.pattern("/private/**")).hasAnyRole(
+                                 Role.ROLE_ADMIN.getValue(),
+                                 Role.ROLE_USER.getValue()
+                                )
+                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults());
